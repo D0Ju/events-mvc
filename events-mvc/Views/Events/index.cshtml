@@ -1,33 +1,70 @@
 @model List<events_mvc.Models.EventViewModel>
 
-<h2>Događaji</h2>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Naziv</th>
-            <th>Lokacija</th>
-            <th>Datum</th>
-            <th>Aktivan</th>
-            <th>Akcije</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Naziv</td>
-                <td>@item.Lokacija</td>
-                <td>@(item.DatumPocetka?.ToString("dd.MM.yyyy") ?? "N/A")</td>
-                <td>@(item.Aktivan ? "Da" : "Ne")</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.Id">Detalji</a> |
-                    <a asp-action="Edit" asp-route-id="@item.Id">Uredi</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Obriši</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<a asp-action="Create" class="btn btn-primary">Novi događaj</a>
+<div class="container my-5">
+    <h1><i class="bi bi-calendar-event"></i> Svi događaji (@Model.Count)</h1>
+    
+    <p>
+        <a asp-action="Create" class="btn btn-primary mb-3">
+            <i class="bi bi-plus-circle"></i> Kreiraj novi događaj
+        </a>
+    </p>
+    
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            <p>Nema događaja. <a asp-action="Create">Kreiraj novi</a></p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th><i class="bi bi-tag"></i> Naziv</th>
+                        <th><i class="bi bi-geo-alt"></i> Lokacija</th>
+                        <th><i class="bi bi-calendar"></i> Početak</th>
+                        <th><i class="bi bi-calendar"></i> Završetak</th>
+                        <th><i class="bi bi-people"></i> Polaznika</th>
+                        <th><i class="bi bi-cash"></i> Cijena</th>
+                        <th><i class="bi bi-info-circle"></i> Opis</th>
+                        <th><i class="bi bi-circle-fill"></i> Status</th>
+                        <th><i class="bi bi-list-ul"></i> Vrsta</th>
+                        <th>Akcije</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><strong>@item.Naziv</strong></td>
+                            <td>@item.Lokacija</td>
+                            <td>@(item.DatumPocetka?.ToString("dd.MM.yyyy") ?? "N/A")</td>
+                            <td>@(item.DatumZavrsetka?.ToString("dd.MM.yyyy") ?? "N/A")</td>
+                            <td>@item.BrojPolaznika</td>
+                            <td>@item.Cijena.ToString("C")</td>
+                            <td>@item.Opis.Substring(0, Math.Min(50, item.Opis.Length))...</td>
+                            <td>
+                                <span class="badge @(item.Aktivan ? "bg-success" : "bg-secondary")">
+                                    @(item.Aktivan ? "Aktivan" : "Neaktivan")
+                                </span>
+                            </td>
+                            <td>@(item.VrstaNaziv ?? "N/A")</td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-pencil"></i> Uredi
+                                </a> |
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">
+                                    <i class="bi bi-eye"></i> Detalji
+                                </a> |
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" onclick="return confirm('Obriši?')">
+                                    <i class="bi bi-trash"></i> Obriši
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
