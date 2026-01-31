@@ -9,7 +9,7 @@
                 </div>
                 
                 <div class="card-body p-3">
-                    <form asp-action="Edit" method="post">
+                    <form method="post">
                         <input type="hidden" asp-for="Id" />
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-2 small"></div>
                         
@@ -17,23 +17,27 @@
                         <div class="mb-2">
                             <label asp-for="Naziv" class="form-label small fw-bold"></label>
                             <input asp-for="Naziv" class="form-control form-control-sm" />
+                            <span asp-validation-for="Naziv" class="text-danger small"></span>
                         </div>
                         
                         <!-- Lokacija -->
                         <div class="mb-2">
                             <label asp-for="Lokacija" class="form-label small fw-bold"></label>
                             <input asp-for="Lokacija" class="form-control form-control-sm" />
+                            <span asp-validation-for="Lokacija" class="text-danger small"></span>
                         </div>
                         
                         <!-- Dates -->
                         <div class="row">
                             <div class="col-6 mb-2">
                                 <label asp-for="DatumPocetka" class="form-label small fw-bold"></label>
-                                <input asp-for="DatumPocetka" type="date" class="form-control form-control-sm" />
+                                <input asp-for="DatumPocetka" class="form-control form-control-sm" />
+                                <span asp-validation-for="DatumPocetka" class="text-danger small"></span>
                             </div>
                             <div class="col-6 mb-2">
                                 <label asp-for="DatumZavrsetka" class="form-label small fw-bold"></label>
-                                <input asp-for="DatumZavrsetka" type="date" class="form-control form-control-sm" />
+                                <input asp-for="DatumZavrsetka" class="form-control form-control-sm" />
+                                <span asp-validation-for="DatumZavrsetka" class="text-danger small"></span>
                             </div>
                         </div>
                         
@@ -42,29 +46,29 @@
                             <div class="col-6 mb-2">
                                 <label asp-for="BrojPolaznika" class="form-label small fw-bold"></label>
                                 <input asp-for="BrojPolaznika" class="form-control form-control-sm" type="number" />
+                                <span asp-validation-for="BrojPolaznika" class="text-danger small"></span>
                             </div>
                             <div class="col-6 mb-2">
                                 <label asp-for="Cijena" class="form-label small fw-bold"></label>
                                 <input asp-for="Cijena" class="form-control form-control-sm" type="number" step="0.01" />
+                                <span asp-validation-for="Cijena" class="text-danger small"></span>
                             </div>
                         </div>
                         
-                        <!-- Opis (shorter) -->
+                        <!-- Opis -->
                         <div class="mb-2">
                             <label asp-for="Opis" class="form-label small fw-bold"></label>
                             <textarea asp-for="Opis" class="form-control form-control-sm" rows="2"></textarea>
+                            <span asp-validation-for="Opis" class="text-danger small"></span>
                         </div>
                         
                         <!-- Vrsta -->
                         <div class="mb-2">
                             <label asp-for="VrstaId" class="form-label small fw-bold">Vrsta</label>
-                            <select asp-for="VrstaId" class="form-control form-control-sm">
+                            <select asp-for="VrstaId" asp-items="@(ViewBag.EventTypes as List<EventTypeViewModel> ?? new List<EventTypeViewModel>()).Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Naziv })" class="form-control form-control-sm">
                                 <option value="">-- Odaberite --</option>
-                                @foreach (var type in await EventTypeService.GetAllAsync())
-                                {
-                                    <option value="@type.Id" selected="@(type.Id == Model.VrstaId ? "selected" : null)">@type.Naziv</option>
-                                }
                             </select>
+                            <span asp-validation-for="VrstaId" class="text-danger small"></span>
                         </div>
                         
                         <!-- Checkbox -->
@@ -86,3 +90,5 @@
         </div>
     </div>
 </div>
+
+

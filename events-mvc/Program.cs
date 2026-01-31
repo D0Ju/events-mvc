@@ -7,9 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpClient<IEventService, EventService>();
 builder.Services.AddHttpClient<IEventTypeService, EventTypeService>();
+builder.Services.AddHttpClient();
+builder.Services.AddHttpContextAccessor(); 
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
+
 
 var app = builder.Build();
 

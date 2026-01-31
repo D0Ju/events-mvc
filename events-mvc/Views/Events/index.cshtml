@@ -1,18 +1,31 @@
 @model List<events_mvc.Models.EventViewModel>
 
 <div class="container my-5">
-    <h1><i class="bi bi-calendar-event"></i> Svi događaji (@Model.Count)</h1>
-    
-    <p>
-        <a asp-action="Create" class="btn btn-primary mb-3">
-            <i class="bi bi-plus-circle"></i> Kreiraj novi događaj
-        </a>
-    </p>
+    <!-- Header with Search -->
+    <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1><i class="bi bi-calendar-event"></i> Svi događaji (@Model.Count)</h1>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Kreiraj novi
+            </a>
+        </div>
+        
+        <!-- ✅ SEARCH BAR -->
+        <form asp-action="SearchByLocation" method="get" class="mb-4">
+            <div class="input-group input-group-lg">
+                <input type="text" name="location" class="form-control" placeholder="Pretraži po lokaciji (npr. Zagreb, Bjelovar...)" />
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-search"></i> Pretraži
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Resetiraj</a>
+            </div>
+        </form>
+    </div>
     
     @if (!Model.Any())
     {
         <div class="alert alert-info text-center">
-            <p>Nema događaja. <a asp-action="Create">Kreiraj novi</a></p>
+            <p>Nema događaja. <a asp-action="Create">Kreiraj prvi</a></p>
         </div>
     }
     else
@@ -49,7 +62,7 @@
                                     @(item.Aktivan ? "Aktivan" : "Neaktivan")
                                 </span>
                             </td>
-                            <td>@(item.VrstaNaziv ?? "N/A")</td>
+                            <td>@(item.Vrsta.Naziv ?? "N/A")</td>
                             <td>
                                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">
                                     <i class="bi bi-pencil"></i> Uredi

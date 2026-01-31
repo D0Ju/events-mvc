@@ -1,13 +1,52 @@
 @model events_mvc.Models.EventViewModel
 
-<h2>Brisanje događaja</h2>
-
-<div class="alert alert-danger">
-    <h4>Jeste li sigurni da želite obrisati "@Model.Naziv"?</h4>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-7">
+            <div class="card shadow-lg mt-5 mb-5 border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> Brisanje događaja
+                    </h3>
+                </div>
+                
+                <div class="card-body p-4">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="bi bi-exclamation-circle"></i>
+                        <strong> Pažnja!</strong> Ova akcija se ne može poništiti.
+                    </div>
+                    
+                    <div class="card bg-light p-3 mb-4">
+                        <h5>@Model.Naziv</h5>
+                        <p class="text-muted mb-1">
+                            <i class="bi bi-geo-alt"></i> @Model.Lokacija
+                        </p>
+                        <p class="text-muted mb-1">
+                            <i class="bi bi-calendar"></i> @(Model.DatumPocetka?.ToString("dd.MM.yyyy") ?? "N/A")
+                        </p>
+                        <p class="text-muted">
+                            <i class="bi bi-cash"></i> @Model.Cijena.ToString("C")
+                        </p>
+                    </div>
+                    
+                    <p class="text-muted mb-4">
+                        Jeste li sigurni da želite obrisati ovaj događaj?
+                    </p>
+                    
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="bi bi-trash"></i> Da, obriši
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                                Odustani
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<form asp-action="DeleteConfirmed" method="post">
-    <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Obriši</button>
-    <a asp-action="Index" class="btn btn-secondary">Odustani</a>
-</form>

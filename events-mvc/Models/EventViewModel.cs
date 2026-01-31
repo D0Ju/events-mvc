@@ -24,6 +24,12 @@ public class EventViewModel
     public decimal Cijena { get; set; }
     public string Opis { get; set; } = "";
     public bool Aktivan { get; set; }
+
+    //za usere
+    public int UserId { get; set; } = 0;
+
     public int VrstaId { get; set; }
     public string? VrstaNaziv { get; set; }
+
+    public EventTypeViewModel? Vrsta { get; set; }
 }

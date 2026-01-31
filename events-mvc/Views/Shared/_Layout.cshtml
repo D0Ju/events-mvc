@@ -25,16 +25,34 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Početna</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Events" asp-action="Index">Događaji</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="EventTypes" asp-action="Index">Vrste</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Events" asp-action="UpcomingEvents"><i class="bi bi-calendar-check"></i> Nadolazeći</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Login">Prijava</a></li>
+                    
+                    @if (Context.Request.Cookies.ContainsKey("token"))
+                    {
+                        <!-- Logged in - show all links -->
+                        <li class="nav-item"><a class="nav-link" asp-controller="Events" asp-action="Index">Događaji</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="EventTypes" asp-action="Index">Vrste</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Events" asp-action="UpcomingEvents"><i class="bi bi-calendar-check"></i> Nadolazeći</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-danger text-white ms-2" asp-controller="Account" asp-action="Logout">Odjava</a>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link">
+                                Prijavljeni ste
+                            </span>
+                        </li>
+                    }
+                    else
+                    {
+                        <!-- Not logged in -->
+                        <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Register">Registracija</a></li>
+                        <li class="nav-item"><a class="nav-link btn btn-primary text-white ms-2" asp-controller="Account" asp-action="Login">Prijava</a></li>
+                    }
                 </ul>
             </div>
         </div>
     </nav>
 
-        <!-- Main (grows to fill space) -->
+    <!-- Main (grows to fill space) -->
     <main role="main" class="flex-grow-1">
         @if (TempData["Success"] != null)
         {
@@ -52,5 +70,7 @@
             <span>© 2026 Event Management - Sva prava pridržana</span>
         </div>
     </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

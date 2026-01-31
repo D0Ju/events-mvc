@@ -1,104 +1,229 @@
 using Microsoft.AspNetCore.Mvc;
 using events_mvc.Models;
-using events_mvc.Services;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+
 
 namespace events_mvc.Controllers;
 
 public class EventsController : Controller
 {
-    private readonly IEventService _eventService;
+    private readonly HttpClient _httpClient;
+    private const string API_URL = "http://localhost:5117/api/events";
 
-    public EventsController(IEventService eventService)
+    public EventsController(HttpClient httpClient)
     {
-        _eventService = eventService;
+        _httpClient = httpClient;
     }
 
-    // GET: /Events
+    private void AddAuthHeader()
+    {
+        if (Request.Cookies.TryGetValue("token", out var token))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = 
+                new AuthenticationHeaderValue("Bearer", token);
+        }
+    }
+
     public async Task<IActionResult> Index()
     {
-        var events = await _eventService.GetAllAsync();
-        return View(events);
+        try
+        {
+            AddAuthHeader();
+            var response = await _httpClient.GetAsync(API_URL);
+            
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                return RedirectToAction("Login", "Account");
+
+            var events = await response.Content.ReadFromJsonAsync<List<EventViewModel>>(); 
+            return View(events ?? new List<EventViewModel>());
+        }
+        catch
+        {
+            return RedirectToAction("Login", "Account");
+        }
     }
 
-    // GET: /Events/Details/5
     public async Task<IActionResult> Details(int id)
     {
-        var ev = await _eventService.GetByIdAsync(id);
-        if (ev == null) return NotFound();
-        return View(ev);
+        try
+        {
+            AddAuthHeader();
+            var response = await _httpClient.GetAsync($"{API_URL}/{id}");
+            
+            if (!response.IsSuccessStatusCode)
+                return NotFound();
+
+            var ev = await response.Content.ReadFromJsonAsync<EventViewModel>();  
+            return View(ev);
+        }
+        catch
+        {
+            return NotFound();
+        }
     }
 
-    // GET: /Events/UpcomingEvents
-    public async Task<IActionResult> UpcomingEvents()
-    {
-        var upcoming = await _eventService.UpcomingEventsAsync();
-        return View(upcoming);
-    }
+    public IActionResult Create() => View();
 
-    // GET: /Events/SearchByLocation?location=zagreb
-    public async Task<IActionResult> SearchByLocation(string? location)
-    {
-        ViewBag.SearchTerm = location;
-        var events = await _eventService.SearchByLocationAsync(location);
-        return View("Index", events);
-    }
-
-    // GET: /Events/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // POST: /Events/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(EventViewModel model)
     {
         if (ModelState.IsValid)
         {
-            await _eventService.CreateAsync(model);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                AddAuthHeader();
+                var response = await _httpClient.PostAsJsonAsync(API_URL, model);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Događaj kreiran!";
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Greška: {ex.Message}");
+            }
         }
         return View(model);
     }
 
-    // GET: /Events/Edit/5
     public async Task<IActionResult> Edit(int id)
     {
-        var ev = await _eventService.GetByIdAsync(id);
-        if (ev == null) return NotFound();
-        return View(ev);
+        try
+        {
+            AddAuthHeader();
+            var response = await _httpClient.GetAsync($"{API_URL}/{id}");
+            
+            if (!response.IsSuccessStatusCode)
+                return NotFound();
+
+            var ev = await response.Content.ReadFromJsonAsync<EventViewModel>();
+            
+            // Load EventTypes for dropdown
+            var typesResponse = await _httpClient.GetAsync("http://localhost:5117/api/eventtypes");
+            var types = await typesResponse.Content.ReadFromJsonAsync<List<EventTypeViewModel>>();
+            ViewBag.EventTypes = types ?? new List<EventTypeViewModel>();
+
+            return View(ev);
+        }
+        catch
+        {
+            return NotFound();
+        }
     }
 
-    // POST: /Events/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, EventViewModel model)
     {
-        if (id != model.Id) return NotFound();
+        if (id != model.Id)
+            return NotFound();
 
         if (ModelState.IsValid)
         {
-            await _eventService.UpdateAsync(id, model);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                AddAuthHeader();
+                var response = await _httpClient.PutAsJsonAsync($"{API_URL}/{id}", model);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Događaj ažuriran!";
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Greška: {ex.Message}");
+            }
         }
         return View(model);
     }
 
-    // GET: /Events/Delete/5
     public async Task<IActionResult> Delete(int id)
     {
-        var ev = await _eventService.GetByIdAsync(id);
-        if (ev == null) return NotFound();
-        return View(ev);
+        try
+        {
+            AddAuthHeader();
+            var response = await _httpClient.GetAsync($"{API_URL}/{id}");
+            
+            if (!response.IsSuccessStatusCode)
+                return NotFound();
+
+            var ev = await response.Content.ReadFromJsonAsync<EventViewModel>();
+            return View(ev);
+        }
+        catch
+        {
+            return NotFound();
+        }
     }
 
-    // POST: /Events/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        await _eventService.DeleteAsync(id);
-        return RedirectToAction(nameof(Index));
+        try
+        {
+            AddAuthHeader();
+            var response = await _httpClient.DeleteAsync($"{API_URL}/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Success"] = "Događaj obrisan!";
+                return RedirectToAction("Index");
+            }
+        }
+        catch { }
+
+        return RedirectToAction("Index");
     }
+
+    public async Task<IActionResult> UpcomingEvents()
+    {
+        try
+        {
+            AddAuthHeader();
+            var response = await _httpClient.GetAsync($"{API_URL}/upcoming");
+            
+            if (!response.IsSuccessStatusCode)
+                return RedirectToAction("Index");
+
+            var upcoming = await response.Content.ReadFromJsonAsync<List<EventViewModel>>(); 
+            return View(upcoming ?? new List<EventViewModel>());
+        }
+        catch
+        {
+            return RedirectToAction("Index");
+        }
+    }
+
+    public async Task<IActionResult> SearchByLocation(string location){
+        if (string.IsNullOrWhiteSpace(location))
+            return RedirectToAction("Index");
+
+        try
+        {
+            AddAuthHeader();
+            var response = await _httpClient.GetAsync(API_URL);
+            var allEvents = await response.Content.ReadFromJsonAsync<List<EventViewModel>>();
+            
+            var results = allEvents?
+                .Where(e => e.Lokacija.Contains(location, StringComparison.OrdinalIgnoreCase))
+                .ToList() ?? new List<EventViewModel>();
+            
+            ViewBag.SearchTerm = location;
+            return View(results);
+        }
+        catch
+        {
+            ViewBag.SearchTerm = location;
+            return View(new List<EventViewModel>());
+        }
+    }
+
+
 }

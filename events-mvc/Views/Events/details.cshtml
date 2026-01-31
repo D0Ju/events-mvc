@@ -1,43 +1,59 @@
-@model events_mvc.Models.EventViewModel
-@{
-    ViewData["Title"] = "Detalji";
-}
+@model EventViewModel
 
-<div class="row">
-    <div class="col-md-12">
-        <h2>@Model.Naziv</h2>
-        <hr />
-        <dl class="row">
-            <dt class="col-sm-2">Lokacija:</dt>
-            <dd class="col-sm-10">@Model.Lokacija</dd>
-            
-            <dt class="col-sm-2">Datum početka:</dt>
-            <dd class="col-sm-10">
-                @(Model.DatumPocetka?.ToString("dd.MM.yyyy") ?? "Nije postavljeno")  <!-- ✅ LINE 13 FIXED -->
-            </dd>
-            
-            <dt class="col-sm-2">Datum završetka:</dt>
-            <dd class="col-sm-10">
-                @(Model.DatumZavrsetka?.ToString("dd.MM.yyyy") ?? "Nije postavljeno")  <!-- ✅ LINE ~15 -->
-            </dd>
-            
-            <dt class="col-sm-2">Broj polaznika:</dt>
-            <dd class="col-sm-10">@Model.BrojPolaznika</dd>
-            
-            <dt class="col-sm-2">Cijena:</dt>
-            <dd class="col-sm-10">@Model.Cijena.ToString("C")</dd>
-            
-            <dt class="col-sm-2">Opis:</dt>
-            <dd class="col-sm-10">@Model.Opis</dd>
-            
-            <dt class="col-sm-2">Aktivan:</dt>
-            <dd class="col-sm-10">@(Model.Aktivan ? "Da" : "Ne")</dd>
-        </dl>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-lg mt-4 mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">@Model.Naziv - Detalji</h3>
+                </div>
+                
+                <div class="card-body p-3">
+                    <dl class="row small">
+                        <dt class="col-sm-4 fw-bold">Naziv:</dt>
+                        <dd class="col-sm-8">@Model.Naziv</dd>
+                        
+                        <dt class="col-sm-4 fw-bold">Vrsta:</dt>
+                        <dd class="col-sm-8">@(Model.Vrsta?.Naziv ?? "N/A")</dd>
+                        
+                        <dt class="col-sm-4 fw-bold">Lokacija:</dt>
+                        <dd class="col-sm-8">@Model.Lokacija</dd>
+                        
+                        <dt class="col-sm-4 fw-bold">Početak:</dt>
+                        <dd class="col-sm-8">@Model.DatumPocetka</dd>
+                        
+                        <dt class="col-sm-4 fw-bold">Završetak:</dt>
+                        <dd class="col-sm-8">@Model.DatumZavrsetka</dd>
+                        
+                        <dt class="col-sm-4 fw-bold">Polaznici:</dt>
+                        <dd class="col-sm-8">@Model.BrojPolaznika</dd>
+                        
+                        <dt class="col-sm-4 fw-bold">Cijena:</dt>
+                        <dd class="col-sm-8">@Model.Cijena</dd>
+                        
+                        <dt class="col-sm-4 fw-bold">Opis:</dt>
+                        <dd class="col-sm-8">@Model.Opis</dd>
+                        
+                        <dt class="col-sm-4 fw-bold">Status:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.Aktivan)
+                            {
+                                <span class="badge bg-success">Aktivan</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Neaktivan</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+                
+                <div class="card-footer bg-light">
+                    <div class="d-grid gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Natrag</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Uredi</a> |
-    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Obriši</a> |
-    <a asp-action="Index" class="btn btn-secondary">Natrag na listu</a>
 </div>

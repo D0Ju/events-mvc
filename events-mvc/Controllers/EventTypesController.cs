@@ -1,89 +1,175 @@
 using Microsoft.AspNetCore.Mvc;
 using events_mvc.Models;
-using events_mvc.Services;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 namespace events_mvc.Controllers;
 
 public class EventTypesController : Controller
 {
-    private readonly IEventTypeService _eventTypeService;
+    private readonly HttpClient _httpClient;
+    private const string API_URL = "http://localhost:5117/api/eventtypes";
 
-    public EventTypesController(IEventTypeService eventTypeService)
+    public EventTypesController(HttpClient httpClient)
     {
-        _eventTypeService = eventTypeService;
+        _httpClient = httpClient;
     }
 
-    // GET: /EventTypes
+    private void AddAuthHeader()
+    {
+        if (Request.Cookies.TryGetValue("token", out var token))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = 
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        }
+    }
+
     public async Task<IActionResult> Index()
     {
-        var types = await _eventTypeService.GetAllAsync();
-        return View(types);
+        try
+        {
+            AddAuthHeader();
+            var response = await _httpClient.GetAsync(API_URL);
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                return RedirectToAction("Login", "Account");
+            var types = await response.Content.ReadFromJsonAsync<List<EventTypeViewModel>>(); 
+            return View(types ?? new List<EventTypeViewModel>());
+        }
+        catch
+        {
+            return View(new List<EventTypeViewModel>());
+        }
     }
 
-    // GET: /EventTypes/Details/5
     public async Task<IActionResult> Details(int id)
     {
-        var type = await _eventTypeService.GetByIdAsync(id);
-        if (type == null) return NotFound();
-        return View(type);
+        try
+        {
+            AddAuthHeader();
+            var response = await _httpClient.GetAsync($"{API_URL}/{id}");
+            
+            if (!response.IsSuccessStatusCode)
+                return NotFound();
+
+            var type = await response.Content.ReadFromJsonAsync<EventTypeViewModel>();
+            return View(type);
+        }
+        catch
+        {
+            return NotFound();
+        }
     }
 
-    // GET: /EventTypes/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
+    public IActionResult Create() => View();
 
-    // POST: /EventTypes/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(EventTypeViewModel model)
     {
         if (ModelState.IsValid)
         {
-            await _eventTypeService.CreateAsync(model);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                AddAuthHeader();
+                var response = await _httpClient.PostAsJsonAsync(API_URL, model);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Vrsta kreirana!";
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Greška: {ex.Message}");
+            }
         }
         return View(model);
     }
 
-    // GET: /EventTypes/Edit/5
     public async Task<IActionResult> Edit(int id)
     {
-        var type = await _eventTypeService.GetByIdAsync(id);
-        if (type == null) return NotFound();
-        return View(type);
+        try
+        {
+            AddAuthHeader();
+            var response = await _httpClient.GetAsync($"{API_URL}/{id}");
+            
+            if (!response.IsSuccessStatusCode)
+                return NotFound();
+
+            var type = await response.Content.ReadFromJsonAsync<EventTypeViewModel>();  // ✅ CHANGE
+            return View(type);
+        }
+        catch
+        {
+            return NotFound();
+        }
     }
 
-    // POST: /EventTypes/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, EventTypeViewModel model)
     {
-        if (id != model.Id) return NotFound();
+        if (id != model.Id)
+            return NotFound();
 
         if (ModelState.IsValid)
         {
-            await _eventTypeService.UpdateAsync(id, model);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                AddAuthHeader();
+                var response = await _httpClient.PutAsJsonAsync($"{API_URL}/{id}", model);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Vrsta ažurirana!";
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Greška: {ex.Message}");
+            }
         }
         return View(model);
     }
 
-    // GET: /EventTypes/Delete/5
     public async Task<IActionResult> Delete(int id)
     {
-        var type = await _eventTypeService.GetByIdAsync(id);
-        if (type == null) return NotFound();
-        return View(type);
+        try
+        {
+            AddAuthHeader();
+            var response = await _httpClient.GetAsync($"{API_URL}/{id}");
+            
+            if (!response.IsSuccessStatusCode)
+                return NotFound();
+
+            var type = await response.Content.ReadFromJsonAsync<EventTypeViewModel>();  // ✅ CHANGE
+            return View(type);
+        }
+        catch
+        {
+            return NotFound();
+        }
     }
 
-    // POST: /EventTypes/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        await _eventTypeService.DeleteAsync(id);
-        return RedirectToAction(nameof(Index));
+        try
+        {
+            AddAuthHeader();
+            var response = await _httpClient.DeleteAsync($"{API_URL}/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Success"] = "Vrsta obrisana!";
+                return RedirectToAction("Index");
+            }
+        }
+        catch { }
+
+        return RedirectToAction("Index");
     }
 }

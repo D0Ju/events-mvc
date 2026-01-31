@@ -1,24 +1,32 @@
 @model events_mvc.Models.EventTypeViewModel
 
-<div class="card">
-    <div class="card-header">
-        <h2>@Model.Naziv - Detalji</h2>
-    </div>
-    <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-3">Naziv:</dt>
-            <dd class="col-sm-9">@Model.Naziv</dd>
-            
-            <dt class="col-sm-3">Opis:</dt>
-            <dd class="col-sm-9">@Model.Opis</dd>
-            
-            <dt class="col-sm-3">Minimalno polaznika:</dt>
-            <dd class="col-sm-9">@Model.MinimalnoPolaznika</dd>
-        </dl>
-        
-        <div class="mt-3">
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Uredi</a>
-            <a asp-action="Index" class="btn btn-secondary">Natrag</a>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-lg mt-4 mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">@Model.Naziv - Detalji</h3>
+                </div>
+                
+                <div class="card-body p-3">
+                    <dl class="row small">
+                        <dt class="col-sm-4 fw-bold">Naziv:</dt>
+                        <dd class="col-sm-8">@Model.Naziv</dd>
+                        
+                        <dt class="col-sm-4 fw-bold">Opis:</dt>
+                        <dd class="col-sm-8">@Model.Opis</dd>
+                        
+                        <dt class="col-sm-4 fw-bold">Minimalno polaznika:</dt>
+                        <dd class="col-sm-8">@Model.MinimalnoPolaznika</dd>
+                    </dl>
+                </div>
+                
+                <div class="card-footer bg-light">
+                    <div class="d-grid gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Natrag</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
