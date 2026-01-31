@@ -18,7 +18,7 @@
             <tr>
                 <td>@item.Naziv</td>
                 <td>@item.Lokacija</td>
-                <td>@item.DatumPocetka.ToShortDateString()</td>
+                <td>@(item.DatumPocetka?.ToString("dd.MM.yyyy") ?? "N/A")</td>
                 <td>@(item.Aktivan ? "Da" : "Ne")</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@item.Id">Detalji</a> |

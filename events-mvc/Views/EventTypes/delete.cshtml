@@ -1,0 +1,13 @@
+@model events_mvc.Models.EventTypeViewModel
+
+<h2>Brisanje vrste</h2>
+
+<div class="alert alert-danger">
+    <h4>Jeste li sigurni? "@Model.Naziv"</h4>
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Obriši</button>
+    <a asp-action="Index" class="btn btn-secondary">Odustani</a>
+</form>

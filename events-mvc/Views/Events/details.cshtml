@@ -1,0 +1,43 @@
+@model events_mvc.Models.EventViewModel
+@{
+    ViewData["Title"] = "Detalji";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>@Model.Naziv</h2>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">Lokacija:</dt>
+            <dd class="col-sm-10">@Model.Lokacija</dd>
+            
+            <dt class="col-sm-2">Datum početka:</dt>
+            <dd class="col-sm-10">
+                @(Model.DatumPocetka?.ToString("dd.MM.yyyy") ?? "Nije postavljeno")  <!-- ✅ LINE 13 FIXED -->
+            </dd>
+            
+            <dt class="col-sm-2">Datum završetka:</dt>
+            <dd class="col-sm-10">
+                @(Model.DatumZavrsetka?.ToString("dd.MM.yyyy") ?? "Nije postavljeno")  <!-- ✅ LINE ~15 -->
+            </dd>
+            
+            <dt class="col-sm-2">Broj polaznika:</dt>
+            <dd class="col-sm-10">@Model.BrojPolaznika</dd>
+            
+            <dt class="col-sm-2">Cijena:</dt>
+            <dd class="col-sm-10">@Model.Cijena.ToString("C")</dd>
+            
+            <dt class="col-sm-2">Opis:</dt>
+            <dd class="col-sm-10">@Model.Opis</dd>
+            
+            <dt class="col-sm-2">Aktivan:</dt>
+            <dd class="col-sm-10">@(Model.Aktivan ? "Da" : "Ne")</dd>
+        </dl>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Uredi</a> |
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Obriši</a> |
+    <a asp-action="Index" class="btn btn-secondary">Natrag na listu</a>
+</div>

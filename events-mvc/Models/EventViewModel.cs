@@ -13,10 +13,12 @@ public class EventViewModel
     public string Lokacija { get; set; } = "";
     
     [Required]
-    public DateTime DatumPocetka { get; set; }
+    [DataType(DataType.Date)]
+    public DateTime? DatumPocetka { get; set; }
     
     [Required]
-    public DateTime DatumZavrsetka { get; set; }
+    [DataType(DataType.Date)]
+    public DateTime? DatumZavrsetka { get; set; }
     
     public int BrojPolaznika { get; set; }
     public decimal Cijena { get; set; }

@@ -1,0 +1,68 @@
+@model events_mvc.Models.EventViewModel
+
+<h2>Novi događaj</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    
+    <div class="form-group mb-3">
+        <label asp-for="Naziv" class="form-label"></label>
+        <input asp-for="Naziv" class="form-control" />
+        <span asp-validation-for="Naziv" class="text-danger"></span>
+    </div>
+    
+    <div class="form-group mb-3">
+        <label asp-for="Lokacija" class="form-label"></label>
+        <input asp-for="Lokacija" class="form-control" />
+        <span asp-validation-for="Lokacija" class="text-danger"></span>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 form-group mb-3">
+            <label asp-for="DatumPocetka" class="form-label"></label>
+            <input asp-for="DatumPocetka" type="date" class="form-control" />
+            <span asp-validation-for="DatumPocetka" class="text-danger"></span>
+        </div>
+        <div class="col-md-6 form-group mb-3">
+            <label asp-for="DatumZavrsetka" class="form-label"></label>
+            <input asp-for="DatumZavrsetka" type="date" class="form-control" />
+            <span asp-validation-for="DatumZavrsetka" class="text-danger"></span>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 form-group mb-3">
+            <label asp-for="BrojPolaznika" class="form-label"></label>
+            <input asp-for="BrojPolaznika" class="form-control" type="number" />
+        </div>
+        <div class="col-md-6 form-group mb-3">
+            <label asp-for="Cijena" class="form-label"></label>
+            <input asp-for="Cijena" class="form-control" type="number" step="0.01" />
+        </div>
+    </div>
+    
+    <div class="form-group mb-3">
+        <label asp-for="Opis" class="form-label"></label>
+        <textarea asp-for="Opis" class="form-control" rows="3"></textarea>
+    </div>
+    
+    <div class="form-group mb-3">
+        <label asp-for="Aktivan" class="form-label"></label>
+        <input asp-for="Aktivan" type="checkbox" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="VrstaId" class="form-label">Vrsta događaja</label>
+            <select asp-for="VrstaId" class="form-control">
+                <option value="">-- Odaberite vrstu --</option>
+                    @foreach (var type in await EventTypeService.GetAllAsync())
+                    {
+                        <option value="@type.Id">@type.Naziv</option>
+                    }
+            </select>
+        <span asp-validation-for="VrstaId" class="text-danger"></span>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Spremi</button>
+    <a asp-action="Index" class="btn btn-secondary">Odustani</a>
+</form>

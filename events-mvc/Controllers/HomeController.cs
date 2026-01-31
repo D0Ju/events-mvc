@@ -1,24 +1,24 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using events_mvc.Models;
+using events_mvc.Services;
 
 namespace events_mvc.Controllers;
 
 public class HomeController : Controller
 {
-    public IActionResult Index()
+    private readonly IEventService _eventService;
+
+    public HomeController(IEventService eventService)
     {
-        return View();
+        _eventService = eventService;
     }
 
-    public IActionResult Privacy()
+    public async Task<IActionResult> Index()
     {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        var upcoming = await _eventService.UpcomingEventsAsync();
+        ViewBag.TotalEvents = (await _eventService.GetAllAsync()).Count;
+        return View(upcoming);
     }
 }
+
