@@ -1,9 +1,18 @@
+using events_mvc.Services;
+
+
+
 var builder = WebApplication.CreateBuilder(args);
+//dodaj servise
+
+builder.Services.AddHttpClient<IEventService, EventService>();
+builder.Services.AddHttpClient<IEventTypeService, EventTypeService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
